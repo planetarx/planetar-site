@@ -1,0 +1,68 @@
+# planetar.ca — www0 nginx (/etc/nginx/sites-available/planetar)
+# ALB terminates TLS (ACM *.planetar.ca); these servers are plain :80 behind doi-alb.
+# ALB host rule {planetar.ca, www.planetar.ca, vic.planetar.ca} -> www0-sness-tg -> www0:80 -> here.
+
+# Shared proxies to the www0 pm2 tier (bridge 7011, ontology 7012).
+# The apex keeps them for the Flutter app (wss://planetar.ca/ws) and the URLs cited in the bids.
+
+# --- project page: planetar.ca, www.planetar.ca (planetar-site, static) ---
+server {
+    listen 80;
+    server_name planetar.ca www.planetar.ca;
+
+    root /Users/sness/github/planetarx/planetar-site;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+    location ~ /(\.git|deploy|README\.md|LICENSE) { return 404; }
+
+    location /ws {
+        proxy_pass http://127.0.0.1:7011;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_read_timeout 86400;
+    }
+    location /api/ {
+        proxy_pass http://127.0.0.1:7012/;
+        proxy_set_header Host $host;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 86400;
+    }
+}
+
+# --- Victoria analyst demo: vic.planetar.ca (planetar-ui dist) ---
+server {
+    listen 80;
+    server_name vic.planetar.ca;
+
+    # vite build with VITE_WS_URL=wss://vic.planetar.ca/ws VITE_ONTOLOGY_URL=https://vic.planetar.ca/api
+    root /Users/sness/github/planetarx/planetar-ui/dist;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    location /ws {
+        proxy_pass http://127.0.0.1:7011;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_read_timeout 86400;
+    }
+    location /api/ {
+        proxy_pass http://127.0.0.1:7012/;
+        proxy_set_header Host $host;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 86400;
+    }
+}

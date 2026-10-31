@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planetar</title>
+<meta name="description" content="Planetar finds vessels that switch off their AIS transponders by matching them across satellite radar, cameras, hydrophones and other sensors. A Zax Analytics project.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="mark" href="/">planetar</a>
+  <nav aria-label="Primary">
+    <a href="#sites">Live sites</a>
+    <a href="#code">Code</a>
+    <a href="#about">About</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="hero-text">
+    <h1>Finding the ships that go dark.</h1>
+    <p class="lede">When a vessel switches off its AIS transponder, it disappears from the usual picture. Planetar learns to recognise that same vessel in satellite radar, harbour cameras, underwater microphones and other sensors, so it can be followed after the beacon goes silent.</p>
+    <div class="actions">
+      <a class="btn primary" href="https://vic.planetar.ca">Open the live Victoria demo</a>
+      <a class="btn" href="https://github.com/planetarx">Read the code</a>
+    </div>
+  </div>
+
+  <figure class="chart" aria-labelledby="chart-cap">
+    <svg viewBox="0 0 640 520" role="img" aria-labelledby="chart-title chart-desc">
+      <title id="chart-title">A vessel track that goes dark and is re-identified</title>
+      <desc id="chart-desc">A vessel reports its position by AIS, then switches its transponder off. While it is dark, a satellite radar detection, a camera sighting and a hydrophone contact are matched back to the same vessel.</desc>
+      <defs>
+        <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+          <path d="M80 0H0V80" fill="none" class="grid"/>
+        </pattern>
+      </defs>
+      <rect width="640" height="520" class="water-deep"/>
+      <path class="water-shoal" d="M0 0H640V120C560 140 520 100 450 118 380 136 330 96 260 104 180 114 120 80 0 96Z"/>
+      <path class="water-shoal" d="M0 520V400C80 384 140 420 220 404 300 388 350 430 430 420 520 408 580 440 640 430V520Z"/>
+      <rect width="640" height="520" fill="url(#grid)"/>
+      <path class="land" d="M0 0H640V54C590 70 540 44 480 60 420 76 380 40 300 52 220 64 150 30 80 46 40 54 20 40 0 44Z"/>
+      <path class="land" d="M0 520V458C60 446 110 472 180 462 250 452 300 484 380 474 460 464 540 492 640 480V520Z"/>
+      <path class="contour" d="M0 150C120 130 200 168 300 150 400 132 470 172 640 150"/>
+      <path class="contour" d="M0 360C110 346 190 378 300 360 410 342 500 380 640 362"/>
+      <g class="soundings" aria-hidden="true">
+        <text x="70" y="200">42</text><text x="238" y="300">57</text><text x="560" y="214">38</text>
+        <text x="120" y="318">61</text><text x="420" y="330">49</text><text x="300" y="420">22</text>
+        <text x="40" y="400">18</text><text x="590" y="392">19</text>
+      </g>
+      <text class="place" x="472" y="34">Vancouver Island</text>
+      <text class="sea" x="214" y="140">Haro Strait</text>
+
+      <path class="track" pathLength="1" d="M40 300C110 280 170 250 240 238"/>
+      <g class="pings">
+        <circle cx="40" cy="300" r="4"/><circle cx="96" cy="283" r="4"/><circle cx="150" cy="261" r="4"/><circle cx="200" cy="246" r="4"/><circle cx="240" cy="238" r="4"/>
+      </g>
+      <path class="dark" pathLength="1" d="M240 238C320 224 380 232 440 260 490 284 530 296 588 290"/>
+      <text class="note" x="250" y="222">AIS off</text>
+
+      <g class="hit radar"><path d="M352 220l9 9-9 9-9-9z"/><text x="368" y="212">radar</text></g>
+      <g class="hit camera"><rect x="450" y="258" width="14" height="14"/><text x="470" y="252">camera</text></g>
+      <g class="hit hydro"><circle cx="520" cy="290" r="6"/><circle cx="520" cy="290" r="13" class="ring"/><text x="488" y="322">hydrophone</text></g>
+      <g class="hit match"><circle cx="588" cy="290" r="18"/><text x="526" y="254">same vessel</text></g>
+    </svg>
+    <figcaption id="chart-cap">AIS reports stop at the solid track. The sensor hits along the dashed line are matched back to the same vessel.</figcaption>
+  </figure>
+</section>
+
+<section class="how">
+  <h2>How it learns</h2>
+  <ol class="steps">
+    <li>
+      <h3>Watch while the beacon is on</h3>
+      <p>While a ship broadcasts AIS, its name and position tell us which radar returns, camera frames and sounds belong to it. Every hour of normal traffic gives the model free training examples, with nobody labelling data by hand.</p>
+    </li>
+    <li>
+      <h3>Learn one shared picture</h3>
+      <p>Each sensor gets its own encoder, trained so that observations of the same vessel land close together whichever sensor made them.</p>
+    </li>
+    <li>
+      <h3>Re-identify when it goes dark</h3>
+      <p>Once the beacon goes silent, new sightings are matched back to the vessel. Each match has a calibrated confidence and shows the evidence it rests on, and an analyst confirms or rejects it.</p>
+    </li>
+  </ol>
+</section>
+
+<section class="legend" aria-labelledby="legend-h">
+  <h2 id="legend-h">Sensors</h2>
+  <p class="section-note">The ingest services in bold are built and running on the shared message bus. The learned model that fuses them is the current research.</p>
+  <dl class="key">
+    <div class="built"><dt><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="4"/></svg>AIS</dt><dd>Live ship positions from coastal receivers</dd></div>
+    <div class="built"><dt><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3l7 7-7 7-7-7z"/></svg>Satellite radar</dt><dd>Sentinel-1 radar scenes, with ship detection</dd></div>
+    <div class="built"><dt><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="4" width="12" height="12"/></svg>Cameras</dt><dd>Public harbour webcams, with vessel detection</dd></div>
+    <div class="built"><dt><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3"/><circle cx="10" cy="10" r="7" fill="none"/></svg>Hydrophones</dt><dd>Underwater audio, classified for vessel sound</dd></div>
+    <div><dt><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 14q3.5-8 7 0t7 0" fill="none"/></svg>Radio emissions</dt><dd>Planned</dd></div>
+    <div><dt><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M4 10h12M4 14h8" fill="none"/></svg>Text reports</dt><dd>Planned: notices to mariners and open reporting</dd></div>
+  </dl>
+</section>
+
+<section id="sites" class="sites">
+  <h2>Live sites</h2>
+  <div class="site-list">
+    <a class="site" href="https://vic.planetar.ca">
+      <span class="host">vic.planetar.ca</span>
+      <span class="state live">Live</span>
+      <p>The analyst workspace on live AIS traffic around Victoria, BC: a channel for each vessel, a map, the entity graph, and a trace of every message from sensor to screen.</p>
+    </a>
+    <div class="site">
+      <span class="host">orca.planetar.ca</span>
+      <span class="state">In development</span>
+      <p>Where are the whales around Victoria right now, and why do we think so? It estimates orca positions from how whale-watching boats move in live AIS, and every estimate links to the data behind it.</p>
+    </div>
+  </div>
+</section>
+
+<section id="code" class="code">
+  <h2>Open source</h2>
+  <p>The Planetar services are public under the GNU GPL v3. The wire format, zmesg, is Apache-2.0 so anyone can speak it.</p>
+  <ul class="repos">
+    <li><a href="https://github.com/planetarx/planetar-broker">planetar-broker</a> the message bus, in C</li>
+    <li><a href="https://github.com/planetarx/planetar-ontology">planetar-ontology</a> the vessel and entity graph</li>
+    <li><a href="https://github.com/planetarx/planetar-ui">planetar-ui</a> the analyst workspace</li>
+    <li><a href="https://github.com/planetarx/planetar-ais">planetar-ais</a> AIS ingest</li>
+    <li><a href="https://github.com/planetarx/planetar-sat">planetar-sat</a> satellite radar</li>
+    <li><a href="https://github.com/planetarx/planetar-eo">planetar-eo</a> cameras</li>
+    <li><a href="https://github.com/planetarx/planetar-acoustic">planetar-acoustic</a> hydrophones</li>
+  </ul>
+  <p><a href="https://github.com/planetarx">All repositories on GitHub</a></p>
+</section>
+
+<section id="about" class="about">
+  <h2>About</h2>
+  <p>Planetar is a project of <strong>Zax Analytics</strong>, an independent Canadian company in Victoria, British Columbia. Steven Ness, the company's founder and CEO, builds it. He brings years of machine-learning work on large unlabelled audio archives, including killer-whale calls from Ocean Networks Canada hydrophones.</p>
+</section>
+
+</main>
+
+<footer class="foot">
+  <span>Zax Analytics, Victoria, BC</span>
+  <span>The chart above is illustrative, not for navigation.</span>
+</footer>
+
+</body>
+</html>

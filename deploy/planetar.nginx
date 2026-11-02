@@ -1,6 +1,6 @@
 # planetar.ca — www0 nginx (/etc/nginx/sites-available/planetar)
 # ALB terminates TLS (ACM *.planetar.ca); these servers are plain :80 behind doi-alb.
-# ALB host rule {planetar.ca, www.planetar.ca, vic.planetar.ca} -> www0-sness-tg -> www0:80 -> here.
+# ALB host rule {planetar.ca, www.planetar.ca, vic.planetar.ca, orca.planetar.ca} -> www0-sness-tg -> www0:80 -> here.
 
 # Shared proxies to the www0 pm2 tier (bridge 7011, ontology 7012).
 # The apex keeps them for the Flutter app (wss://planetar.ca/ws) and the URLs cited in the bids.
@@ -64,5 +64,34 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_read_timeout 86400;
+    }
+}
+
+# --- whale tracker: orca.planetar.ca (planetar-ui-orca dist) ---
+# Its own bridge (9400, BRIDGE_READ_ONLY=1, origin https://orca.planetar.ca) and
+# inference service (9410), both loopback, under pm2 as planetar:orca-*.
+server {
+    listen 80;
+    server_name orca.planetar.ca;
+
+    # vite build with VITE_WS_URL=wss://orca.planetar.ca/ws VITE_ORCA_SERVICE_URL=https://orca.planetar.ca/svc
+    root /Users/sness/github/planetarx/planetar-ui-orca/dist;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    location /ws {
+        proxy_pass http://127.0.0.1:9400;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_read_timeout 86400;
+    }
+    location /svc/ {
+        proxy_pass http://127.0.0.1:9410/;
+        proxy_set_header Host $host;
     }
 }
